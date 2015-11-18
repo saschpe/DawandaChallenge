@@ -47,7 +47,7 @@ public class CategoryLoader extends AsyncTaskLoader<List<Category>> {
         try {
             final Response response = client.newCall(request).execute();
             final String responseString = new String(response.body().bytes(), "ISO-8859-1");
-            Log.d(TAG, "loadInBackground(): Got response:\n" + responseString);
+            Log.d(TAG, "loadInBackground(): Got response of size " + responseString.length());
 
             try {
                 // Let's not get to fancy here and hard-code JSON node hierarchy...
