@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/navigation_group_calendar_views"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_categories"
+            android:checked="true"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="@string/categories" />
+
+        <!-- Doable but doesn't make much sense in a master-detail flow:
+        <item
+            android:id="@+id/navigation_item_products"
+            android:checked="true"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="@string/products" /> -->
+    </group>
+
+    <group
+        android:id="@+id/navigation_group_misc">
+        <item
+            android:id="@+id/navigation_item_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings"/>
+    </group>
+</menu>

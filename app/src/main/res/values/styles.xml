@@ -1,0 +1,39 @@
+<resources>
+
+    <style name="AppThemeBase" parent="Theme.AppCompat.Light">
+        <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->
+        <!-- colorPrimary is used, for instance, for the default ActionBar (but not Toolbar) background.
+             We specify the same color for the toolbar background in toolbar.xml.. -->
+        <item name="colorPrimary">@color/primary</item>
+        <!-- darker variant for the status bar and contextual app bars
+             colorPrimaryDark is used for the status bar (with the battery, clock, etc). -->
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <!-- theme UI controls like checkboxes and text fields e.g. FloatActionButton
+             colorAccent is used as the default value for colorControlActivated which is used to tint widgets. -->
+        <item name="colorAccent">@color/accent</item>
+
+        <!-- Title text color -->
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <!-- Title color in AppCompat.Light  -->
+        <!--<item name="android:textColorPrimaryInverse">@android:color/white</item>-->
+        <!-- color of the menu overflow icon (three vertical dots) -->
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+        <!--<item name="android:windowBackground">@color/primary_light</item>-->
+        <item name="android:listDivider">@color/divider</item>
+
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
+    </style>
+
+    <style name="AppTheme" parent="AppThemeBase">
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <!-- Both of these are needed -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

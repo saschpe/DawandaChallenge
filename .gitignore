@@ -1,0 +1,57 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# Ruby
+.irb-history
+
+# Cucumber
+test_servers/
+screenshot_*.png
+cucumber.json
+
+# IntelliJ / Android Studio
+*.iml
+.idea/.name
+# User-specific stuff:
+.idea/dictionaries
+.idea/find.xml
+.idea/misc.xml
+.idea/workspace.xml
+.idea/tasks.xml
+# Sensitive or high-churn files:
+## .idea/dataSources.ids
+## .idea/dataSources.xml
+## .idea/sqlDataSources.xml
+## .idea/dynamic.xml
+## .idea/uiDesigner.xml
+# Gradle:
+.idea/gradle.xml
+.idea/libraries
+.idea/modules.xml
+# Mongo Explorer plugin:
+.idea/mongoSettings.xml
+# JIRA plugin
+atlassian-ide-plugin.xml
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+# Checkstyle / FindBugs plugin (we still have project config)
+.idea/checkstyle-idea.xml
+.idea/findbugs-idea.xml
+captures/
+
+# Eclipse
+.classpath
+.project
+
+# Windows
+Thumbs.db
+
+# Mac OS X
+.DS_Store
+
+#special resources
+/ws_acess_data_hde.xml
