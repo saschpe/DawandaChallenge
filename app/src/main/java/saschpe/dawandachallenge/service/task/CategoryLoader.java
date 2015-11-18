@@ -37,7 +37,7 @@ public class CategoryLoader extends AsyncTaskLoader<List<Category>> {
         categories = new ArrayList<>();
         final HashSet<String> categoryNamesAlreadyParsed = new HashSet<>();
 
-        // I can't stand stock Android's HttpClient, sorry...
+        // Sorry, but Java's HttpURLConnection is a mess...
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder()
                 .url(CATEGORY_URL)
@@ -46,7 +46,7 @@ public class CategoryLoader extends AsyncTaskLoader<List<Category>> {
 
         try {
             final Response response = client.newCall(request).execute();
-            final String responseString = response.body().string();
+            final String responseString = new String(response.body().bytes(), "ISO-8859-1");
             Log.d(TAG, "loadInBackground(): Got response:\n" + responseString);
 
             try {

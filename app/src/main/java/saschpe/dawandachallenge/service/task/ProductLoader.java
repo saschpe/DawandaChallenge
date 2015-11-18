@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,7 +55,7 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
 
         try {
             final Response response = client.newCall(request).execute();
-            final String responseString = response.body().string();
+            final String responseString = new String(response.body().bytes(), "ISO-8859-1");
             Log.d(TAG, "loadInBackground(): Got response:\n" + responseString);
 
             try {

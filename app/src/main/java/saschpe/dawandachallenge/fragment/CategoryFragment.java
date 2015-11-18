@@ -55,7 +55,7 @@ public class CategoryFragment extends Fragment implements
         View rootView = inflater.inflate(R.layout.view_recycler, container, false);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setAdapter(adapter);
 
         return rootView;
