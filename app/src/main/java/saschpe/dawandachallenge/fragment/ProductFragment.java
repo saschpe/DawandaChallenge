@@ -41,7 +41,7 @@ public class ProductFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter = new ProductAdapter();
+        adapter = new ProductAdapter(getContext());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +69,8 @@ public class ProductFragment extends Fragment implements
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
                             && totalItemCount >= pageSize) {
-                        // TODO: Maybe load a little earlier, not quite at the last item...
+                        // Maybe load a little earlier, not quite at the last item. But this way
+                        // it is extra obvious :-)
 
                         // Emulate loading more data according to stage 2. Not quite paging but...
                         isLoading = true;

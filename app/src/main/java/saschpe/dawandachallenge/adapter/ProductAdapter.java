@@ -1,10 +1,13 @@
 package saschpe.dawandachallenge.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,17 +21,21 @@ import saschpe.dawandachallenge.model.Product;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private List<Product> data;
+    private Context context;
+    private int lastPosition = -1;
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         private ImageView image;
         private TextView title;
         private TextView price;
+        private View container;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.image);
             title = (TextView) itemView.findViewById(R.id.title);
             price = (TextView) itemView.findViewById(R.id.price);
+            container = itemView.findViewById(R.id.container);
         }
 
         public void bindTo(@NonNull Product product) {
@@ -38,8 +45,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
     }
 
-    public ProductAdapter() {
+    public ProductAdapter(@NonNull Context context) {
         data = new ArrayList<>();
+        this.context = context;
     }
 
     @Override
@@ -52,6 +60,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(ProductViewHolder holder, int position) {
         holder.bindTo(data.get(position));
+
+        setAnimation(holder.container, position);
+    }
+
+    private void setAnimation(View view, int position)
+    {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_bottom);
+            view.startAnimation(animation);
+            lastPosition = position;
+        }
     }
 
     @Override

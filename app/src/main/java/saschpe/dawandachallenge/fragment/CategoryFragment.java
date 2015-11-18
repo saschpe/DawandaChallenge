@@ -47,7 +47,7 @@ public class CategoryFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter = new CategoryAdapter(this);
+        adapter = new CategoryAdapter(getContext(), this);
     }
 
     @Override
