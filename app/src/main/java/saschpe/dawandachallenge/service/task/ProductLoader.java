@@ -14,7 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,7 @@ import saschpe.dawandachallenge.model.Product;
 public class ProductLoader extends AsyncTaskLoader<List<Product>> {
     private static final String TAG = ProductLoader.class.getName();
     private static final String PRODUCT_URL = "http://public.dawanda.in/products.json";
+    private static final String BACKING_STORE_FILENAME = "product.json";
     private static final int MAX_TRIES = 3;  // How often do we try network requests..
 
     private ArrayList<Product> products;
@@ -44,35 +49,61 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
         // NOTE(saschpe): First shot at properly parsing prices. Technically, this is not 100% accurate. Ideally,
         // we need a Currency instance for the base_price.currency we got from JSON, retrieve a matching locale and
         // then format the price. Retrieving a matching locale for a currency isn't straightforward and performing
-        // badly if done for every price retrieved from JSON. Alas, let's get some properly formatted prices anyway:
+        // badly if done for every price retrieved from JSON. Alas, let's pretend anyway:
         final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
         final double centsConversionFactor = Math.pow(10, currencyFormat.getCurrency().getDefaultFractionDigits());
 
-        // I can't stand stock Android's HttpClient, sorry...
-        final OkHttpClient client = new OkHttpClient();
-        final Request request = new Request.Builder()
-                .url(PRODUCT_URL)
-                .build();
-
-        // Fetch stuff and threat network errors, too...
+        // Caution, messy code ahead!
         String responseString = null;
-        boolean success = false;
-        int tries = 0;
-        do {
-            try {
-                Response response = client.newCall(request).execute();
-                if (tries == 0) {
-                    throw new IOException("Childishly simulate a network error!");
+
+        InputStream inputStream = null;
+        try {
+            inputStream = new BufferedInputStream(getContext().openFileInput(BACKING_STORE_FILENAME));
+            // Use magic scanner trick to fetch us a string from that pesky stream.
+            java.util.Scanner s = new java.util.Scanner(inputStream, "ISO-8859-1").useDelimiter("\\A");
+            responseString = s.hasNext() ? s.next() : "";
+            Log.d(TAG, "loadInBackground(): Successfully loaded from file " + BACKING_STORE_FILENAME);
+        } catch (IOException e) {
+            // Sorry, but Java's HttpURLConnection is a mess...
+            final OkHttpClient client = new OkHttpClient();
+            final Request request = new Request.Builder().url(PRODUCT_URL).build();
+
+            // Fetch stuff and threat network errors, too...
+            boolean success = false;
+            int tries = 0;
+            do {
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (tries == 0) {
+                        throw new IOException("Childishly simulate a network error!");
+                    }
+                    responseString = new String(response.body().bytes(), "ISO-8859-1");
+                    Log.d(TAG, "loadInBackground(): Got response of size " + responseString.length());
+                    success = true;
+                } catch (IOException ey) {
+                    ey.printStackTrace(); // Too bad, network down or invalid encoding or garbage?
+                    Log.d(TAG, "loadInBackground(): Whoopsie, a network error. Let's try again...");
+                    tries++; // Let's try again. We could add some exponential backoff though...
                 }
-                responseString = new String(response.body().bytes(), "ISO-8859-1");
-                Log.d(TAG, "loadInBackground(): Got response of size " + responseString.length());
-                success = true;
-            } catch (IOException e) {
-                e.printStackTrace(); // Too bad, network down or invalid encoding or garbage?
-                Log.d(TAG, "loadInBackground(): Whoopsie, a network error. Let's try again...");
-                tries++; // Let's try again. We could add some exponential backoff though...
+            } while (!success && tries < MAX_TRIES);
+
+            // Persist data. Nobody said "use a content provider" :-)
+            try {
+                OutputStream outputStream = new BufferedOutputStream(getContext().openFileOutput(BACKING_STORE_FILENAME, Context.MODE_PRIVATE));
+                outputStream.write(responseString.getBytes());
+                outputStream.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        } while (!success && tries < MAX_TRIES);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace(); // Jeez, I just love Java ;-)
+                }
+            }
+        }
 
         if (responseString != null) {
             try {
