@@ -19,6 +19,9 @@ import java.util.List;
 import saschpe.dawandachallenge.R;
 import saschpe.dawandachallenge.model.Product;
 
+import static saschpe.dawandachallenge.helper.FontHelper.typefaceLiberationMonoRegular;
+import static saschpe.dawandachallenge.helper.PreferencesHelper.getSharedPreferences;
+
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private List<Product> data;
     private Context context;
@@ -40,6 +43,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         public void bindTo(@NonNull Product product) {
             title.setText(product.title);
+            // This is not quite perfect, changing settings will affect only "new" viewholders
+            // But listening for config changes in the adapter seemed overkill for a demo...
+            if (getSharedPreferences(itemView.getContext())
+                    .getBoolean(itemView.getContext().getString(R.string.pref_custom_font_key),
+                            itemView.getResources().getBoolean(R.bool.pref_custom_font_default))) {
+                // Use a custom font here...
+                title.setTypeface(typefaceLiberationMonoRegular(itemView.getContext()));
+            }
             price.setText(product.price);
             Picasso.with(itemView.getContext()).load(product.listViewImageUri).into(image); // Async for life!
         }

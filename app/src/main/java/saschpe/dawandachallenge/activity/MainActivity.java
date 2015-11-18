@@ -1,5 +1,6 @@
 package saschpe.dawandachallenge.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import saschpe.dawandachallenge.R;
@@ -14,10 +16,13 @@ import saschpe.dawandachallenge.activity.base.NavigationViewActivity;
 import saschpe.dawandachallenge.fragment.CategoryFragment;
 import saschpe.dawandachallenge.fragment.ProductFragment;
 import saschpe.dawandachallenge.helper.ActionBarHelper;
+import saschpe.dawandachallenge.widget.VersionInfoDialogFragment;
 
 public class MainActivity extends NavigationViewActivity implements
         CategoryFragment.OnClickedListener,
         FragmentManager.OnBackStackChangedListener {
+
+    private static final String TAG = MainActivity.class.getName();
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
@@ -27,6 +32,7 @@ public class MainActivity extends NavigationViewActivity implements
     private ActionBarDrawerToggle drawerToggle;
     private CategoryFragment categoryFragment;
     private ProductFragment productFragment;
+    private VersionInfoDialogFragment versionInfoDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,12 @@ public class MainActivity extends NavigationViewActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         // TODO: Select sth. different based on currently active fragment....
         selectedNavigationItem = R.id.navigation_item_categories;
@@ -82,7 +94,7 @@ public class MainActivity extends NavigationViewActivity implements
                 //TODO(saschpe): Display fragment!
                 break;
             case R.id.navigation_item_settings:
-                //startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
     }
@@ -95,6 +107,12 @@ public class MainActivity extends NavigationViewActivity implements
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportFragmentManager().popBackStack();
                 }
+                return true;
+            case R.id.action_version_info:
+                if (versionInfoDialogFragment == null) {
+                    versionInfoDialogFragment = VersionInfoDialogFragment.newInstance();
+                }
+                versionInfoDialogFragment.show(getFragmentManager(), TAG);
                 return true;
         }
         return super.onOptionsItemSelected(item);
