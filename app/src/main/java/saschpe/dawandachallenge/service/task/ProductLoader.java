@@ -15,8 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import saschpe.dawandachallenge.model.Product;
 
@@ -38,6 +41,13 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
         Log.d(TAG, "loadInBackground(): Let's do it");
         products = new ArrayList<>();
 
+        // NOTE(saschpe): First shot at properly parsing prices. Technically, this is not 100% accurate. Ideally,
+        // we need a Currency instance for the base_price.currency we got from JSON, retrieve a matching locale and
+        // then format the price. Retrieving a matching locale for a currency isn't straightforward and performing
+        // badly if done for every price retrieved from JSON. Alas, let's get some properly formatted prices anyway:
+        final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        final double centsConversionFactor = Math.pow(10, currencyFormat.getCurrency().getDefaultFractionDigits());
+
         // I can't stand stock Android's HttpClient, sorry...
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder()
@@ -55,15 +65,10 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
                 final JSONObject jsonData = json.getJSONObject("data").getJSONObject("data");
                 final JSONArray jsonProducts = jsonData.getJSONArray("products");
 
-
                 for (int i = 0; i < jsonProducts.length(); i++) {
                     final JSONObject jsonProduct = jsonProducts.getJSONObject(i);
-
                     final JSONObject jsonPrice = jsonProduct.getJSONObject("price");
-
-                    // TODO/FIXME: Currency conversion / locale, you name it
-                    final String formattedPrice = jsonPrice.getString("cents"); // symbol..
-
+                    final String formattedPrice = currencyFormat.format(Float.valueOf(jsonPrice.getString("cents")) / centsConversionFactor);
                     products.add(new Product(
                             jsonProduct.getString("title"),
                             formattedPrice,
