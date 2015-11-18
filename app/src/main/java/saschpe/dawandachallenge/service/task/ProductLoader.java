@@ -28,6 +28,7 @@ import saschpe.dawandachallenge.model.Product;
 public class ProductLoader extends AsyncTaskLoader<List<Product>> {
     private static final String TAG = ProductLoader.class.getName();
     private static final String PRODUCT_URL = "http://public.dawanda.in/products.json";
+    private static final int MAX_TRIES = 3;  // How often do we try network requests..
 
     private ArrayList<Product> products;
 
@@ -53,11 +54,27 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
                 .url(PRODUCT_URL)
                 .build();
 
-        try {
-            final Response response = client.newCall(request).execute();
-            final String responseString = new String(response.body().bytes(), "ISO-8859-1");
-            Log.d(TAG, "loadInBackground(): Got response of size " + responseString.length());
+        // Fetch stuff and threat network errors, too...
+        String responseString = null;
+        boolean success = false;
+        int tries = 0;
+        do {
+            try {
+                Response response = client.newCall(request).execute();
+                if (tries == 0) {
+                    throw new IOException("Childishly simulate a network error!");
+                }
+                responseString = new String(response.body().bytes(), "ISO-8859-1");
+                Log.d(TAG, "loadInBackground(): Got response of size " + responseString.length());
+                success = true;
+            } catch (IOException e) {
+                e.printStackTrace(); // Too bad, network down or invalid encoding or garbage?
+                Log.d(TAG, "loadInBackground(): Whoopsie, a network error. Let's try again...");
+                tries++; // Let's try again. We could add some exponential backoff though...
+            }
+        } while (!success && tries < MAX_TRIES);
 
+        if (responseString != null) {
             try {
                 // Let's not get to fancy here and hard-code JSON node hierarchy...
                 final JSONObject json = new JSONObject(responseString);
@@ -77,8 +94,6 @@ public class ProductLoader extends AsyncTaskLoader<List<Product>> {
             } catch (JSONException e) {
                 e.printStackTrace(); // Mhm, got invalid JSON?
             }
-        } catch (IOException e) {
-            e.printStackTrace(); // Too bad, network down?
         }
 
         return products;
