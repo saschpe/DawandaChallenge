@@ -50,7 +50,7 @@ public class CategoryLoader extends AsyncTaskLoader<List<Category>> {
         try {
             inputStream = new BufferedInputStream(getContext().openFileInput(BACKING_STORE_FILENAME));
             // Use magic scanner trick to fetch us a string from that pesky stream.
-            java.util.Scanner s = new java.util.Scanner(inputStream, "ISO-8859-1").useDelimiter("\\A");
+            java.util.Scanner s = new java.util.Scanner(inputStream, "UTF-8").useDelimiter("\\A");
             responseString = s.hasNext() ? s.next() : "";
             Log.d(TAG, "loadInBackground(): Successfully loaded from file " + BACKING_STORE_FILENAME);
         } catch (IOException e) {
