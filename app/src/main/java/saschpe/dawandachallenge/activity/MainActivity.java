@@ -48,8 +48,10 @@ public class MainActivity extends NavigationViewActivity implements
         // activity should be in two-pane mode.
         isTwoPane = findViewById(R.id.detailContainer) != null;
 
+        // This has to be set (again) on orientation changes:
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+
         if (savedInstanceState == null) {
-            getSupportFragmentManager().addOnBackStackChangedListener(this);
             categoryFragment = (CategoryFragment) getSupportFragmentManager().findFragmentById(R.id.categoryFragment);
 
             if (isTwoPane) {
@@ -122,6 +124,11 @@ public class MainActivity extends NavigationViewActivity implements
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    public void onBackStackChanged() {
+        drawerToggle.setDrawerIndicatorEnabled(getSupportFragmentManager().getBackStackEntryCount() == 0);
+    }
+
     private void replaceFragment(Fragment fragment, boolean addToBackStack) {
         int id;
         if (isTwoPane) {
@@ -136,10 +143,5 @@ public class MainActivity extends NavigationViewActivity implements
             drawerToggle.setDrawerIndicatorEnabled(false);
         }
         t.commit();
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        drawerToggle.setDrawerIndicatorEnabled(getSupportFragmentManager().getBackStackEntryCount() == 0);
     }
 }
