@@ -19,6 +19,8 @@ import java.util.List;
 import saschpe.dawandachallenge.R;
 import saschpe.dawandachallenge.model.Category;
 
+import static saschpe.dawandachallenge.helper.FontHelper.typefaceLiberationMonoRegular;
+
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
     private List<Category> data;
     private Context context;
@@ -39,6 +41,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
         public void bindTo(@NonNull Category category) {
             name.setText(category.name);
+            // Use a custom font here...
+            name.setTypeface(typefaceLiberationMonoRegular(itemView.getContext()));
             Picasso.with(itemView.getContext()).load(category.imageUri).into(image); // Async for life!
         }
     }
